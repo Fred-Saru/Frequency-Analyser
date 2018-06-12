@@ -187,6 +187,11 @@ function drawOscilloscope() {
             } else {
                 const j = waveform.length - 1 - i;
                 y = Math.abs(waveform[j]);
+
+                // const j = waveform.length - 1 - i;
+                // const scale = 1 / (analyser.maxDecibels - analyser.minDecibels);
+                // const offset = analyser.minDecibels;
+                // y = ((waveform[j] - offset) * scale) * scopeCanvas.height;
             }
 
             if (i == 0) {
