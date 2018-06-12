@@ -1,171 +1,22 @@
-<style>
-    html, body {
-        margin: 0;
-        padding: 0;
-    }
-
-    body {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-    }
-
-    main {
-        margin-top: 0.75em;
-        flex-grow: 1;
-    }
-
-    .btn {
-        width: 75px;
-        height: 50px;	    
-        outline: none;
-        padding: 1em;
-	    border: none;
-    }
-
-    .playback-container{
-        flex-grow: 1;
-        display: flex;
-        align-items: center;
-        height: 50px;
-        background-color: cornflowerblue;
-        cursor: pointer;
-        position: relative;
-    }
-
-    .playback {
-        width: 0;
-        height: 45px;
-        background-color: lightblue;
-    }
-
-    .volume{
-        display: inline-block;
-        height: 50px;
-        padding: 0 1em;
-        background-color: lightgreen; 
-        width: 100px;
-    }
-
-    footer {
-        display: flex;
-        justify-content: center;
-        margin-top: 0.75em;
-        width: 100%;
-    }
-
-</style>
+<link rel="stylesheet" href="../css/home.css">
 
 <header>
     <h1>Hello!</h1>
 </header>
 <main>
     <audio id="audioSource" src="./audio/Nujabes_Tribute.wav" preload="auto"></audio>
-    <canvas id="oscilloscope"></canvas>
+    {{!-- <canvas id="time" class="oscilloscope"></canvas>
+    <canvas id="frequency" class="oscilloscope"></canvas> --}}
+    <canvas id="oscillator" class="oscilloscope"></canvas>
 </main>
 <footer>   
     <button id="startBtn" class="btn">Start</button>
-    <div id="playback-container" class="playback-container">
-        <div id="playback" class="playback"></div>
+    <div id="playback-slider" class="playback-slider slider" data-method="slideTime">
+        <div id="playback-progress" class="playback-progress"></div>
     </div>
-    <div class="volume"></div>
+    <div id="volume-slider" class="volume-slider slider" data-method="slideVolume">
+        <div id="volume-progress" class="volume-progress"></div>
+    </div>
 </footer>
 
-<script>
-    let audioCtx, masterGain, waveform, analyser;
-
-    function audioSetup() {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        const song = document.getElementById('audioSource');
-        const songSource = audioCtx.createMediaElementSource(song);
-        let songPlaying = false;
-
-        analyser = audioCtx.createAnalyser();
-
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.3;
-
-        songSource.connect(masterGain);
-        masterGain.connect(analyser);
-        masterGain.connect(audioCtx.destination);
-
-        waveform = new Float32Array(analyser.frequencyBinCount);
-
-        const startBtn = document.getElementById('startBtn');
-        startBtn.addEventListener('click', () => {
-            if(songPlaying) {
-                song.pause();
-                startBtn.innerText = 'Start';
-            } else {
-                song.play();
-                drawOscilloscope();
-			    updateWaveForm();
-                drawPlayback();
-                startBtn.innerText = 'Pause';
-            }
-
-            songPlaying = !songPlaying;
-        });
-
-        const playbackEl = document.getElementById("playback");
-        let playbackDelta = 0;
-        
-        song.addEventListener('loadedmetadata', () => {
-            playbackDelta = playbackEl.parentElement.getBoundingClientRect().width / song.duration;
-        })
-
-        function drawPlayback() {
-            requestAnimationFrame(drawPlayback);
-            playbackEl.style.width = song.currentTime * playbackDelta + 'px';
-        }
-
-        const playbackCont = document.getElementById('playback-container');
-        playbackCont.addEventListener('click', (e) => {
-            const x = e.clientX - playbackCont.offsetLeft;
-            song.currentTime = x / playbackDelta;
-        });
-    }
-
-    audioSetup();
-
-    function updateWaveForm() {
-        requestAnimationFrame(updateWaveForm);
-        analyser.getFloatTimeDomainData(waveform);
-    }
-
-    function drawOscilloscope() {
-        requestAnimationFrame(drawOscilloscope);
-
-        const scopeCanvas = document.getElementById('oscilloscope');
-        const scopeContext = scopeCanvas.getContext('2d');
-
-        scopeCanvas.width = window.innerWidth;
-        scopeCanvas.height = 400;
-
-        scopeContext.clearRect(0, 0, scopeCanvas.width, scopeCanvas.height);
-        scopeContext.beginPath();
-
-        const delta = window.innerWidth / waveform.length;
-        
-        for (let i = 0; i < waveform.length; i++) {
-            const x = i * delta;
-            const y = (0.5 + (waveform[i])) * scopeCanvas.height;
-
-            if(i == 0) {
-                scopeContext.moveTo(x, y);
-            } else {
-                scopeContext.lineTo(x, y);
-            }
-        }
-
-        scopeContext.strokeStyle= 'black';
-        scopeContext.stroke();
-
-        scopeContext.beginPath();
-        scopeContext.moveTo(0,0.5 * scopeCanvas.height);
-        scopeContext.lineTo(scopeCanvas.width,0.5 * scopeCanvas.height);
-        scopeContext.strokeStyle = 'lightgray';
-        scopeContext.stroke();
-    }
-</script>
+<script type="text/javascript" src="../js/home.js"></script>
