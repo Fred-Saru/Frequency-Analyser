@@ -132,14 +132,17 @@ function drawPlayback() {
 // Create Frequency Wave Form
 // ==============================================
 const analyser = audioCtx.createAnalyser();
-const freqWaveform = new Uint8Array(analyser.frequencyBinCount);
+const freqWaveform = new Float32Array(analyser.frequencyBinCount);
+const freqWaveform2 = new Uint8Array(analyser.frequencyBinCount);
 
 masterGain.connect(analyser);
-analyser.getByteFrequencyData(freqWaveform);
+analyser.getFloatFrequencyData(freqWaveform);
+analyser.getByteFrequencyData(freqWaveform2);
 
 function updateFreqWaveForm() {
     requestAnimationFrame(updateFreqWaveForm);
-    analyser.getByteFrequencyData(freqWaveform);
+    analyser.getFloatFrequencyData(freqWaveform);
+    analyser.getByteFrequencyData(freqWaveform2);
 }
 
 
@@ -159,23 +162,32 @@ function drawOscilloscope() {
     scopeContext.clearRect(0, 0, scopeCanvas.width, scopeCanvas.height);
     scopeContext.beginPath();
 
-    const delta = window.innerWidth / freqWaveform.length;
-    const screenScale = scopeCanvas.height / 256;
+    const waveforms = [freqWaveform, freqWaveform2];
 
-    for (let i = 0; i < freqWaveform.length; i++) {
-        const x = i * delta;
-        const scale = 1 / (analyser.maxDecibels - analyser.minDecibels);
-        const offset = analyser.minDecibels;
-        const y = scopeCanvas.height - 1 - freqWaveform[i] * screenScale;
+    waveforms.forEach((waveform, index) => {
+        const delta = window.innerWidth / waveform.length;
 
-        if (i == 0) {
-            scopeContext.moveTo(x, y);
-        } else {
-            scopeContext.lineTo(x, y);
+        for (let i = 0; i < waveform.length; i++) {
+            const x = i * delta;
+            let y = 0;
+
+            if(index === 0) {
+                const scale = 255 / (analyser.maxDecibels - analyser.minDecibels);
+                const offset = analyser.minDecibels;
+                y = - ((waveform[i] - offset) * scale);
+            } else {
+                y = scopeCanvas.height - 100 - waveform[i];
+            }
+
+            if (i == 0) {
+                scopeContext.moveTo(x, y);
+            } else {
+                scopeContext.lineTo(x, y);
+            }
         }
-    }
 
-    scopeContext.strokeStyle = 'red';
-    scopeContext.lineWidth = 1;
-    scopeContext.stroke();
+        scopeContext.strokeStyle = index === 0 ? 'red' : 'green';
+        scopeContext.lineWidth = 1;
+        scopeContext.stroke();
+    });
 }
