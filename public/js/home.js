@@ -89,7 +89,6 @@ function playSong() {
     if(!songPlaying) {
         song.play();
         drawOscilloscope();
-        updateTimeWaveForm();
         updateFreqWaveForm();
         drawPlayback();
         startBtn.innerText = 'Pause';
@@ -130,30 +129,17 @@ function drawPlayback() {
 
 
 // ==============================================
-// Create Time Wave Form
-// ==============================================
-const analyser = audioCtx.createAnalyser();
-const timeWaveform = new Float32Array(analyser.frequencyBinCount);
-
-masterGain.connect(analyser);
-analyser.getFloatTimeDomainData(timeWaveform);
-
-function updateTimeWaveForm() {
-    requestAnimationFrame(updateTimeWaveForm);
-    analyser.getFloatTimeDomainData(timeWaveform);
-}
-
-
-// ==============================================
 // Create Frequency Wave Form
 // ==============================================
-const freqWaveform = new Float32Array(analyser.frequencyBinCount);
+const analyser = audioCtx.createAnalyser();
+const freqWaveform = new Uint8Array(analyser.frequencyBinCount);
 
-analyser.getFloatFrequencyData(freqWaveform);
+masterGain.connect(analyser);
+analyser.getByteFrequencyData(freqWaveform);
 
 function updateFreqWaveForm() {
     requestAnimationFrame(updateFreqWaveForm);
-    analyser.getFloatFrequencyData(freqWaveform);
+    analyser.getByteFrequencyData(freqWaveform);
 }
 
 
@@ -173,48 +159,23 @@ function drawOscilloscope() {
     scopeContext.clearRect(0, 0, scopeCanvas.width, scopeCanvas.height);
     scopeContext.beginPath();
 
-    const waveforms = [timeWaveform, freqWaveform];
+    const delta = window.innerWidth / freqWaveform.length;
+    const screenScale = scopeCanvas.height / 256;
 
-    waveforms.forEach((waveform, idx) => {
-        const delta = window.innerWidth / waveform.length;
+    for (let i = 0; i < freqWaveform.length; i++) {
+        const x = i * delta;
+        const scale = 1 / (analyser.maxDecibels - analyser.minDecibels);
+        const offset = analyser.minDecibels;
+        const y = scopeCanvas.height - 1 - freqWaveform[i] * screenScale;
 
-        for (let i = 0; i < waveform.length; i++) {
-            const x = i * delta;
-            let y;
-
-            if(idx === 0) {
-                y = (0.5 + (waveform[i])) * scopeCanvas.height;
-            } else {
-                const j = waveform.length - 1 - i;
-                y = Math.abs(waveform[j]);
-
-                // const j = waveform.length - 1 - i;
-                // const scale = 1 / (analyser.maxDecibels - analyser.minDecibels);
-                // const offset = analyser.minDecibels;
-                // y = ((waveform[j] - offset) * scale) * scopeCanvas.height;
-            }
-
-            if (i == 0) {
-                scopeContext.moveTo(x, y);
-            } else {
-                scopeContext.lineTo(x, y);
-            }
+        if (i == 0) {
+            scopeContext.moveTo(x, y);
+        } else {
+            scopeContext.lineTo(x, y);
         }
+    }
 
-        scopeContext.strokeStyle = idx === 0 ? 'red' : 'green';
-        scopeContext.lineWidth = 1.5;
-        scopeContext.stroke();
-
-        scopeContext.beginPath();
-        scopeContext.strokeStyle = 'lightgray';
-        scopeContext.moveTo(0, 0.5 * scopeCanvas.height);
-        scopeContext.lineTo(scopeCanvas.width, 0.5 * scopeCanvas.height);
-        scopeContext.stroke();
-
-        scopeContext.beginPath();
-        scopeContext.strokeStyle = 'lightgray';
-        scopeContext.moveTo(0, scopeCanvas.height);
-        scopeContext.lineTo(scopeCanvas.width, scopeCanvas.height);
-        scopeContext.stroke();
-    });
+    scopeContext.strokeStyle = 'red';
+    scopeContext.lineWidth = 1;
+    scopeContext.stroke();
 }
