@@ -1,22 +1,7 @@
 <link rel="stylesheet" href="../css/home.css">
 
-<header>
-    <h1>Hello!</h1>
-</header>
 <main>
-    <audio id="audioSource" src="./audio/Nujabes_Tribute.wav" preload="auto"></audio>
-    {{!-- <canvas id="time" class="oscilloscope"></canvas>
-    <canvas id="frequency" class="oscilloscope"></canvas> --}}
-    <canvas id="oscillator" class="oscilloscope"></canvas>
+    <svg id="svg">
+        <g class="waveform"><path></path></g>
+    </svg>
 </main>
-<footer>   
-    <button id="startBtn" class="btn">Start</button>
-    <div id="playback-slider" class="playback-slider slider" data-method="slideTime">
-        <div id="playback-progress" class="playback-progress"></div>
-    </div>
-    <div id="volume-slider" class="volume-slider slider" data-method="slideVolume">
-        <div id="volume-progress" class="volume-progress"></div>
-    </div>
-</footer>
-
-<script type="text/javascript" src="../js/home.js"></script>
