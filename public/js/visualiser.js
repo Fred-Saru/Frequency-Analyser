@@ -1,34 +1,37 @@
-define(["d3", "audio", "waveform"], (d3, audio, waveform) => {
+define(["signals/sinusoid"], (Sinusoid) => {
 
-    const visualiser = {};
-    let waveformVisualiser;
+    function Visualiser(type, frequency, amplitude = 1 ) {
+        if(!type || !frequency) {
+            throw `The waveform and frequence are mandatory.`;
+        }
 
-    function initialize() {
-        const svg = d3.select('#svg');
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        type = type.toLowerCase();
 
-        svg.attr("width", width);
-        svg.attr("height", height);
+        if(type !== 'sine' && type !== 'triangle' && type != 'square' && type != 'sawtooth') {
+            throw `The waveform can be of the following type: sine, square, triangle or sawtooth.`;
+        }
 
-        const waveformEl = svg.select(".waveform");
-        waveformEl.attr("width", width);
-        waveformEl.attr("height", height/2);
-        waveformEl.attr("transform", "translate(0, " + height / 2 + ")");
+        let curve;
 
-        waveformVisualiser = waveform(waveformEl, 2048);
+        switch(type) {
+            case 'sine': 
+                curve = new Sinusoid(frequency, amplitude);
+            break;
+        }
 
-    }
-
-    initialize();
-
-    visualiser.visualise = function() {
-        if(audio.isPlaying('A1')) {
-            const waveArray = audio.getFloatTimeData('A1');
-            waveformVisualiser(waveArray);
+        this.setAmplitude = function (amplitude) {
+            curve.setAmplitude(amplitude);
+        }
+    
+        this.setFrequency = function (frequency) {
+            curve.setFrequency(frequency);
+        }
+    
+        this.setType = function (type) {
+    
         }
     }
 
-    return visualiser;
+    return Visualiser;
 
 });

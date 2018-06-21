@@ -3,12 +3,18 @@ html, body {
     padding: 0;
 }
 
-body {
-    background-color: #135;
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 10px 20px;
 }
 
-svg path {
-    stroke: white;
-    stroke-width: 2;
-    fill: none;
+div {
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.panel {
+    display: inline-block;
 }
