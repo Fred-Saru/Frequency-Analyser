@@ -1,8 +1,8 @@
 define(["signals/sinusoid"], (Sinusoid) => {
 
-    function Visualiser(type, frequency, amplitude = 1 ) {
-        if(!type || !frequency) {
-            throw `The waveform and frequence are mandatory.`;
+    function Visualiser(id, type, frequency, amplitude = 1 ) {
+        if(!type || !frequency || !id) {
+            throw `The id, waveform and frequence are mandatory.`;
         }
 
         type = type.toLowerCase();
@@ -15,7 +15,7 @@ define(["signals/sinusoid"], (Sinusoid) => {
 
         switch(type) {
             case 'sine': 
-                curve = new Sinusoid(frequency, amplitude);
+                curve = new Sinusoid(id, frequency, amplitude);
             break;
         }
 

@@ -10,11 +10,40 @@ main {
     margin: 10px 20px;
 }
 
-div {
+.track {
+    display: flex;
     flex-grow: 0;
     flex-shrink: 0;
 }
 
+.control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+}
+
+.display {
+    display: inline-block;
+    flex-grow: 1;
+}
+
 .panel {
     display: inline-block;
+}
+
+input[type=range] {
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+}
+
+.slider input {
+    width: 50px;
+}
+
+.btn-group button {
+    cursor: pointer;
+    display: block;
+    margin: 5px;
+    padding: 6px 10px;
 }

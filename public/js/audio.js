@@ -49,9 +49,7 @@ define(() => {
             }
         }
 
-        this.setVolume = function(volume) {
-            const gain = gain;
-    
+        this.setVolume = function(volume) {   
             if( volume < gain.minValue || gain.maxValue < volume) {
                 throw `the gain should be in the range [${gain.minValue}, ${gain.maxValue}].`;
             }

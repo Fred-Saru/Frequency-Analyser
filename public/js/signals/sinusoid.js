@@ -1,9 +1,9 @@
 define(() => {
 
-    function Sinusoid(freq, amp) {
-        const parent = document.getElementById('circuit');
+    function Sinusoid(id, freq, amp) {
+        const parent = document.getElementById(`display-track${id}`);
         const canvas = document.createElement('canvas');
-        canvas.setAttribute('width', window.innerWidth - 40);
+        canvas.setAttribute('width', parent.getBoundingClientRect().width - 20);
         parent.appendChild(canvas);
 
         const origin = { x: 10, y: 0.5 * canvas.height };
@@ -36,6 +36,8 @@ define(() => {
     
         function showAxes() {
             context.beginPath();
+            context.lineWidth = 1;
+            context.strokeStyle = "grey";
             context.moveTo(origin.x, origin.y);
             context.lineTo(canvas.width, origin.y);
             context.moveTo(origin.x, 0);
@@ -50,7 +52,7 @@ define(() => {
     
             context.beginPath();
             context.lineWidth = 2;
-            context.strokeStyle = "blue";
+            context.strokeStyle = "orange";
             for(let i = iMin; i < iMax; i++) {
                 const x = dx * i;
                 const y = (amplitude * canvas.height * 0.5) * Math.sin(x * frequency);
