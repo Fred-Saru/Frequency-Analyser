@@ -37,22 +37,33 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             btnGroup.appendChild(playBtn);
             btnGroup.appendChild(optionBtn);
 
-            const slider = document.createElement('div');
-            slider.setAttribute('class', 'slider');
-            const sliderInput = document.createElement('input');
-            sliderInput.setAttribute('class', 'slider__range');
-            sliderInput.setAttribute('type', 'range');
-            sliderInput.setAttribute('min', '0');
-            sliderInput.setAttribute('max', '100');
-            sliderInput.setAttribute('value', (amp * 100).toString());
-            sliderInput.setAttribute('orient', 'vertical');
-            sliderInput.addEventListener('click', (event) => { handleVolumeChange.call(this, event.currentTarget); });
-            sliderInput.addEventListener('mousedown', (event) => { activateVolumeChange.call(this, event); });
+            const sliders = document.createElement('div');
+            sliders.setAttribute('class', 'slider');
+            const volInput = document.createElement('input');
+            volInput.setAttribute('class', 'slider__range');
+            volInput.setAttribute('type', 'range');
+            volInput.setAttribute('min', '0');
+            volInput.setAttribute('max', '100');
+            volInput.setAttribute('value', (amp * 100).toString());
+            volInput.setAttribute('orient', 'vertical');
+            volInput.addEventListener('click', (event) => { handleVolumeChange.call(this, event.currentTarget); });
+            volInput.addEventListener('mousedown', (event) => { activateVolumeChange.call(this, event); });
 
-            slider.appendChild(sliderInput);
+            const freqInput = document.createElement('input');
+            freqInput.setAttribute('class', 'slider__range');
+            freqInput.setAttribute('type', 'range');
+            freqInput.setAttribute('min', '0');
+            freqInput.setAttribute('max', '20000');
+            freqInput.setAttribute('value', freq.toString());
+            freqInput.setAttribute('orient', 'vertical');
+            freqInput.addEventListener('click', (event) => { handleFrequenceChange.call(this, event.currentTarget); });
+            freqInput.addEventListener('mousedown', (event) => { activateFrequenceChange.call(this, event); });
+
+            sliders.appendChild(volInput);
+            sliders.appendChild(freqInput);
 
             controlDiv.appendChild(btnGroup);
-            controlDiv.appendChild(slider);
+            controlDiv.appendChild(sliders);
 
             const displayDiv = document.createElement("div");
             displayDiv.setAttribute('class', 'display');
@@ -86,6 +97,25 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
         function handleVolumeChange(target) {
             const volume = target.value / 100;
             this.setAmplitude(volume);
+        }
+
+        function activateFrequenceChange(event) {
+            const target = event.currentTarget;
+            const handle = handleFrequenceChange.bind(this, target);
+            const remove = removeDrag.bind(this)
+
+            target.addEventListener('mousemove', handle);
+            target.addEventListener('mouseup',remove);   
+
+            function removeDrag(event) {
+                const target = event.currentTarget;
+                target.removeEventListener('mousemove', handle);
+                target.removeEventListener('mouseup', remove);
+            }
+        }
+
+        function handleFrequenceChange(target) {
+            this.setFrequency(target.value);
         }
 
 

@@ -20,7 +20,7 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 150px;
+    min-width: 150px;
 }
 
 .display {
@@ -35,6 +35,10 @@ main {
 input[type=range] {
     writing-mode: bt-lr; /* IE */
     -webkit-appearance: slider-vertical; /* WebKit */
+}
+
+.slider {
+    display: flex;
 }
 
 .slider input {
