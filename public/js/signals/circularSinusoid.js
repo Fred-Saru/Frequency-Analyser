@@ -56,7 +56,7 @@ define(() => {
     
         function showCircle() {
 
-            const dTheta = Math.PI * 0.0005;
+            const dTheta = Math.PI * (1/parseSpeed);
             const radius = 100;
             
             context.beginPath();
@@ -65,7 +65,7 @@ define(() => {
 
             for(let theta = 0; theta <= Math.PI * 2; theta += dTheta) {
                 
-                const r = radius + (amplitude * canvas.height * 0.5) * Math.sin(frequency * theta);
+                const r = radius + (amplitude * canvas.height * 0.5) * Math.sin(theta);
                 const x = r * Math.cos(theta);
                 const y = r * Math.sin(theta);
 

@@ -29,6 +29,10 @@ define(["signals/sinusoid", "signals/circularSinusoid"], (Sinusoid, cSinusoid) =
             sine.setFrequency(frequency);
             circle.setFrequency(frequency);
         }
+
+        this.setSpeed = function (speed) {
+            circle.setSpeed(speed);
+        }
     
         this.setType = function (type) {
     

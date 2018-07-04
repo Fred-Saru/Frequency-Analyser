@@ -1,7 +1,7 @@
 requirejs(["audio", "visualiser", "track"], function(Audio, Visualiser, Track) {
 
         var track1 = new Track('sine', 110, 0.2);
-        var track1 = new Track('sine', 50, 0.2);
+        //var track1 = new Track('sine', 50, 0.2);
         //var track1 = new Track('sine', 220, 0.2);
         //var track1 = new Track('sine', 330, 0.1);
         console.log(track1);
