@@ -67,7 +67,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             freqSlider.setAttribute('class', 'slider__range');
             freqSlider.setAttribute('type', 'range');
             freqSlider.setAttribute('min', '0');
-            freqSlider.setAttribute('max', '20000');
+            freqSlider.setAttribute('max', '100');
             freqSlider.setAttribute('value', freq.toString());
             freqSlider.setAttribute('orient', 'vertical');
             freqSlider.addEventListener('click', (event) => { handleFrequenceChange.call(this, event.currentTarget); });
@@ -77,7 +77,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             freqInput.setAttribute('class', 'slider__input');
             freqInput.setAttribute('type', 'number');
             freqInput.setAttribute('min', '0');
-            freqInput.setAttribute('max', '20000');
+            freqInput.setAttribute('max', '100');
             freqInput.setAttribute('value', freq.toString());
             freqInput.addEventListener('change', (event) => { handleFrequenceChange.call(this, event.currentTarget); });
 
@@ -89,7 +89,8 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             speedSlider.setAttribute('class', 'slider__range');
             speedSlider.setAttribute('type', 'range');
             speedSlider.setAttribute('min', '0');
-            speedSlider.setAttribute('max', '20000');
+            speedSlider.setAttribute('max', '100');
+            speedSlider.setAttribute('step', '0.1');
             speedSlider.setAttribute('value', speed.toString());
             speedSlider.setAttribute('orient', 'vertical');
             speedSlider.addEventListener('click', (event) => { handleSpeedChange.call(this, event.currentTarget); });
@@ -99,7 +100,8 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             speedInput.setAttribute('class', 'slider__input');
             speedInput.setAttribute('type', 'number');
             speedInput.setAttribute('min', '0');
-            speedInput.setAttribute('max', '20000');
+            speedInput.setAttribute('max', '100');
+            speedInput.setAttribute('step', '0.1');
             speedInput.setAttribute('value', speed.toString());
             speedInput.addEventListener('change', (event) => { handleSpeedChange.call(this, event.currentTarget); });
 
