@@ -57,7 +57,6 @@ define(() => {
         function showCircle() {
 
             const dTheta = 0.001;
-            const radius = 100;
             
             context.beginPath();
             context.lineWidth = 2;
@@ -65,14 +64,14 @@ define(() => {
 
             for(let theta = 0; theta <= Math.PI * 2; theta += dTheta) {
                 
-                const r = radius + (amplitude * canvas.height * 0.5) * Math.sin(frequency * theta);
+                const r = (amplitude * canvas.height * 0.5) * Math.sin(frequency * theta);
                 const x = r * Math.cos(parseSpeed * theta);
                 const y = r * Math.sin(parseSpeed * theta);
 
                 if(theta === 0) {
-                    context.moveTo(origin.x + x, origin.y - y);
+                    context.moveTo(origin.x - x, origin.y - y);
                 } else {
-                    context.lineTo(origin.x + x, origin.y - y);
+                    context.lineTo(origin.x - x, origin.y - y);
                 }
 
             }

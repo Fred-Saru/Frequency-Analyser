@@ -15,23 +15,23 @@ define(["signals/sinusoid", "signals/circularSinusoid"], (Sinusoid, cSinusoid) =
 
         switch(type) {
             case 'sine': 
-                sine = new Sinusoid(id, frequency, amplitude);
-                circle = new cSinusoid(id, frequency, amplitude, speed);
+                sine = new Sinusoid(id, frequency, amplitude, speed);
+                //circle = new cSinusoid(id, frequency, amplitude, speed);
             break;
         }
 
         this.setAmplitude = function (amplitude) {
             sine.setAmplitude(amplitude);
-            circle.setAmplitude(amplitude);
+            //circle.setAmplitude(amplitude);
         }
     
         this.setFrequency = function (frequency) {
             sine.setFrequency(frequency);
-            circle.setFrequency(frequency);
+            //circle.setFrequency(frequency);
         }
 
         this.setSpeed = function (speed) {
-            circle.setSpeed(speed);
+            sine.setSpeed(speed);
         }
     
         this.setType = function (type) {
