@@ -7,20 +7,40 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin: 10px 20px;
 }
 
-.track {
+.track__header {
+    text-align: center;
+    background-color: turquoise;
+    padding: 5px 0;
+    margin-top: 2.5px;
+}
+
+.track__header-name {
+    border: 0;
+    text-align: center;
+    font-size: 25px;
+    background-color: transparent;
+}
+
+.track__body.close {
+    display: none;
+}
+
+.track__body {
     display: flex;
     flex-grow: 0;
     flex-shrink: 0;
+    background-color: paleturquoise;
 }
 
 .control {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-width: 150px;
+    background-color: teal;
 }
 
 .display {
@@ -32,17 +52,25 @@ main {
     display: inline-block;
 }
 
-input[type=range] {
-    writing-mode: bt-lr; /* IE */
-    -webkit-appearance: slider-vertical; /* WebKit */
+.slider__container {
+    display: flex;
+    flex-direction: column;
+}
+
+.slider__container input {
+    margin: 2px 10px;
+    width: auto;
 }
 
 .slider {
     display: flex;
+    flex-direction: column;
+    margin-top: 7px;
 }
 
-.slider input {
-    width: 50px;
+.slider__title {
+    display: block;
+    text-align: center;
 }
 
 .btn-group button {
@@ -50,4 +78,23 @@ input[type=range] {
     display: block;
     margin: 5px;
     padding: 6px 10px;
+}
+
+.add-track {
+    position: fixed;
+    bottom: 20px;
+    right: 25px;
+    width: 50px;
+    height: 50px;
+    background-color: lightgreen;
+    color: white;
+    font-weight: bold;
+    font-size: 40px;    
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.add-track:focus {
+    outline: none;
 }

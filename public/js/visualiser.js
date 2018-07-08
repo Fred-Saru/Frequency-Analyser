@@ -1,7 +1,7 @@
-define(["signals/sinusoid", "signals/circularSinusoid"], (Sinusoid, cSinusoid) => {
+define(["signals/sinusoid"], (Sinusoid, cSinusoid) => {
 
-    function Visualiser(id, type, frequency, amplitude = 1, speed = 1) {
-        if(!type || !frequency || !id) {
+    function Visualiser(id, type, freq, amp = 1, speed = 1) {
+        if(!type || !freq || !id) {
             throw `The id, waveform and frequence are mandatory.`;
         }
 
@@ -11,23 +11,27 @@ define(["signals/sinusoid", "signals/circularSinusoid"], (Sinusoid, cSinusoid) =
             throw `The waveform can be of the following type: sine, square, triangle or sawtooth.`;
         }
 
-        let sine, circle;
+        let amplitude = amp;
+        let frequency = freq;
+        let sine, baseFn;
 
         switch(type) {
-            case 'sine': 
-                sine = new Sinusoid(id, frequency, amplitude, speed);
-                //circle = new cSinusoid(id, frequency, amplitude, speed);
+            case 'sine':
+                baseFn = function sinusFn(o, t) {
+                    return (amplitude * o) * Math.sin(t * frequency);
+                } 
+                sine = new Sinusoid(id, baseFn, speed);
             break;
         }
 
-        this.setAmplitude = function (amplitude) {
-            sine.setAmplitude(amplitude);
-            //circle.setAmplitude(amplitude);
+        this.setAmplitude = function (amp) {
+            amplitude = +amp;
+            sine.refresh();
         }
     
-        this.setFrequency = function (frequency) {
-            sine.setFrequency(frequency);
-            //circle.setFrequency(frequency);
+        this.setFrequency = function (freq) {
+            frequency = +freq;
+            sine.refresh();
         }
 
         this.setSpeed = function (speed) {

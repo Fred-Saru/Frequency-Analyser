@@ -10,16 +10,25 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
         const visualiser = new Visualiser(trackCounter, type, freq, amp, speed);
         const audio = new Audio(type, freq, amp);
         
-
-        // Private Methods  
-
         function initialize() {
             trackCounter += 1;
             const container = document.getElementById('shelf');
             
+            const trackHeader = document.createElement('div');
+            trackHeader.setAttribute('class', 'track__header');
+            trackHeader.setAttribute('data-target', `track_${trackCounter}`);
+            trackHeader.addEventListener('click', handleTrackToggle);
+
+            const trackName = document.createElement('input');
+            trackName.setAttribute('class', 'track__header-name')
+            trackName.value = `Track ${trackCounter}`;
+            trackName.addEventListener('click', nopFunction);
+
+            trackHeader.appendChild(trackName);
+
             const trackDiv = document.createElement('div');
-            trackDiv.setAttribute('class', 'track');
-            trackDiv.id = `track${trackCounter}`;
+            trackDiv.setAttribute('class', 'track__body');
+            trackDiv.id = `track_${trackCounter}`;
 
             const controlDiv = document.createElement('div');
             controlDiv.setAttribute('class', 'control');
@@ -38,10 +47,15 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             btnGroup.appendChild(optionBtn);
 
             const sliders = document.createElement('div');
-            sliders.setAttribute('class', 'slider');
+            sliders.setAttribute('class', 'slider__container');
 
             const volBlock = document.createElement('div');
+            volBlock.setAttribute('class', 'slider');
+            const volTitle = document.createElement('span');
+            volTitle.setAttribute('class', 'slider__title');
+            volTitle.innerText = "Volume";
             const volSlider = document.createElement('input');
+            volSlider.id = `vol_slider_${trackCounter}`;
             volSlider.setAttribute('class', 'slider__range');
             volSlider.setAttribute('type', 'range');
             volSlider.setAttribute('min', '0');
@@ -52,6 +66,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             volSlider.addEventListener('mousedown', (event) => { activateVolumeChange.call(this, event); });
 
             const volInput = document.createElement('input');
+            volInput.id = `vol_input_${trackCounter}`;
             volInput.setAttribute('class', 'slider__input');
             volInput.setAttribute('type', 'number');
             volInput.setAttribute('min', '0');
@@ -59,11 +74,17 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             volInput.setAttribute('value', (amp * 100).toString());
             volInput.addEventListener('change', (event) => { handleVolumeChange.call(this, event.currentTarget); });
 
+            volBlock.appendChild(volTitle);
             volBlock.appendChild(volSlider);
             volBlock.appendChild(volInput);
 
             const freqBlock = document.createElement('div');
+            freqBlock.setAttribute('class', 'slider')
+            const freqTitle = document.createElement('span');
+            freqTitle.setAttribute('class', 'slider__title');
+            freqTitle.innerText = "Frequency";
             const freqSlider = document.createElement('input');
+            freqSlider.id = `freq_slider_${trackCounter}`;
             freqSlider.setAttribute('class', 'slider__range');
             freqSlider.setAttribute('type', 'range');
             freqSlider.setAttribute('min', '0');
@@ -74,6 +95,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             freqSlider.addEventListener('mousedown', (event) => { activateFrequenceChange.call(this, event); });
 
             const freqInput = document.createElement('input');
+            freqInput.id = `freq_input_${trackCounter}`;
             freqInput.setAttribute('class', 'slider__input');
             freqInput.setAttribute('type', 'number');
             freqInput.setAttribute('min', '0');
@@ -81,11 +103,17 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             freqInput.setAttribute('value', freq.toString());
             freqInput.addEventListener('change', (event) => { handleFrequenceChange.call(this, event.currentTarget); });
 
+            freqBlock.appendChild(freqTitle);
             freqBlock.appendChild(freqSlider);
             freqBlock.appendChild(freqInput);
 
             const speedBlock = document.createElement('div');
+            speedBlock.setAttribute('class', 'slider')
+            const speedTitle = document.createElement('span');
+            speedTitle.setAttribute('class', 'slider__title');
+            speedTitle.innerText = "Speed";
             const speedSlider = document.createElement('input');
+            speedSlider.id = `speed_slider_${trackCounter}`;
             speedSlider.setAttribute('class', 'slider__range');
             speedSlider.setAttribute('type', 'range');
             speedSlider.setAttribute('min', '0');
@@ -97,6 +125,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             speedSlider.addEventListener('mousedown', (event) => { activateSpeedChange.call(this, event); });
 
             const speedInput = document.createElement('input');
+            speedInput.id = `speed_input_${trackCounter}`;
             speedInput.setAttribute('class', 'slider__input');
             speedInput.setAttribute('type', 'number');
             speedInput.setAttribute('min', '0');
@@ -105,6 +134,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             speedInput.setAttribute('value', speed.toString());
             speedInput.addEventListener('change', (event) => { handleSpeedChange.call(this, event.currentTarget); });
 
+            speedBlock.appendChild(speedTitle);
             speedBlock.appendChild(speedSlider);
             speedBlock.appendChild(speedInput);
 
@@ -122,7 +152,19 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             trackDiv.appendChild(controlDiv);
             trackDiv.appendChild(displayDiv);
 
+            container.appendChild(trackHeader);
             container.appendChild(trackDiv);
+        }
+
+        function handleTrackToggle(event) {
+            const target = event.currentTarget.dataset['target'];
+            const elTarget = document.getElementById(target);
+
+            if(elTarget.classList.contains('close')) {
+                elTarget.classList.remove('close');
+            } else {
+                elTarget.classList.add('close');
+            }
         }
 
         function handlePlayBtnClick(event) {
@@ -145,6 +187,11 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
         }
 
         function handleVolumeChange(target) {
+            const id = target.id.split('_')[2];
+
+            document.getElementById(`vol_slider_${id}`).value = target.value;
+            document.getElementById(`vol_input_${id}`).value = target.value;
+
             const volume = target.value / 100;
             this.setAmplitude(volume);
         }
@@ -165,6 +212,10 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
         }
 
         function handleFrequenceChange(target) {
+            const id = target.id.split('_')[2];
+
+            document.getElementById(`freq_slider_${id}`).value = target.value;
+            document.getElementById(`freq_input_${id}`).value = target.value;
             this.setFrequency(target.value);
         }
 
@@ -184,9 +235,17 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
         }
 
         function handleSpeedChange(target) {
+            const id = target.id.split('_')[2];
+            
+            document.getElementById(`speed_slider_${id}`).value = target.value;
+            document.getElementById(`speed_input_${id}`).value = target.value;
             this.setSpeed(target.value);
         }
 
+        function nopFunction(event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
 
         // Public Methods
 
