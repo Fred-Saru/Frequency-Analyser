@@ -22,6 +22,27 @@ define(["signals/sinusoid"], (Sinusoid, cSinusoid) => {
                 } 
                 sine = new Sinusoid(id, baseFn, speed);
             break;
+            case 'square':
+                baseFn = function squareFn(o, t) {
+                    const val = Math.sin(t * frequency);
+
+                    return (amplitude * o) * (val > 0 ? 1 : -1);
+                } 
+                sine = new Sinusoid(id, baseFn, speed);
+            break;
+            case 'triangle':
+                baseFn = function triangleFn(o, t) {
+                    return (amplitude * o) * (2 * amplitude / (1 / frequency)) * (Math.abs((t % (1 / frequency)) - (1 / frequency) / 2) - (1 / frequency) / 4);
+                } 
+                sine = new Sinusoid(id, baseFn, speed);
+            break;
+            case 'sawtooth':
+                baseFn = function sawtoothFn(o, t) {
+                    const val = frequency * t;
+                    return (amplitude * o) * (val - Math.floor(val));
+                } 
+                sine = new Sinusoid(id, baseFn, speed);
+            break;
         }
 
         this.setAmplitude = function (amp) {
