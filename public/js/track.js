@@ -187,13 +187,17 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
         }
 
         function handleVolumeChange(target) {
-            const id = target.id.split('_')[2];
+            setTimeout(debounceVol.bind(this), 10);
+            
+            function debounceVol() {
+                const id = target.id.split('_')[2];
 
-            document.getElementById(`vol_slider_${id}`).value = target.value;
-            document.getElementById(`vol_input_${id}`).value = target.value;
+                document.getElementById(`vol_slider_${id}`).value = target.value;
+                document.getElementById(`vol_input_${id}`).value = target.value;
 
-            const volume = target.value / 100;
-            this.setAmplitude(volume);
+                const volume = target.value / 100;
+                this.setAmplitude(volume);
+            }
         }
 
         function activateFrequenceChange(event) {
@@ -212,11 +216,15 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
         }
 
         function handleFrequenceChange(target) {
-            const id = target.id.split('_')[2];
+            setTimeout(debounceFreq.bind(this), 50);
 
-            document.getElementById(`freq_slider_${id}`).value = target.value;
-            document.getElementById(`freq_input_${id}`).value = target.value;
-            this.setFrequency(target.value);
+            function debounceFreq() {
+                const id = target.id.split('_')[2];
+
+                document.getElementById(`freq_slider_${id}`).value = target.value;
+                document.getElementById(`freq_input_${id}`).value = target.value;
+                this.setFrequency(target.value);
+            }
         }
 
         function activateSpeedChange(event) {
@@ -235,11 +243,15 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
         }
 
         function handleSpeedChange(target) {
-            const id = target.id.split('_')[2];
+            setTimeout(debounceSpeed.bind(this), 100);
+
+            function debounceSpeed() {
+                const id = target.id.split('_')[2];
             
-            document.getElementById(`speed_slider_${id}`).value = target.value;
-            document.getElementById(`speed_input_${id}`).value = target.value;
-            this.setSpeed(target.value);
+                document.getElementById(`speed_slider_${id}`).value = target.value;
+                document.getElementById(`speed_input_${id}`).value = target.value;
+                this.setSpeed(target.value);
+            }
         }
 
         function nopFunction(event) {
