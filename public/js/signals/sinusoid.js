@@ -1,10 +1,10 @@
 define(() => {
 
-    function Sinusoid(id, baseFn, speed = 1) {
+    function Sinusoid(id, signalFn, speed = 1) {
         let parseSpeed = speed;
         const radDegRatio = Math.PI / 180;
 
-        const parent = document.getElementById(`display-track${id}`);
+        const parent = document.getElementById(`display-track-${id}`);
         const parentwidth = parent.getBoundingClientRect().width;
         // Signal Canvas
         const signalCanvas = document.createElement('canvas');
@@ -16,7 +16,7 @@ define(() => {
         const signalOrigin = { x: 10, y: 0.5 * signalCanvas.height };
         const signalContext = signalCanvas.getContext('2d');
         const signalFunction = function (t) {
-            return baseFn(signalOrigin.y, t * radDegRatio);
+            return signalFn(signalOrigin.y, t * radDegRatio);
         }
 
         // Circular canvas
@@ -28,7 +28,7 @@ define(() => {
         const circularOrigin = { x: 0.5 * circularCanvas.width, y: 0.5 * circularCanvas.height };
         const circularContext = circularCanvas.getContext('2d');
         const circularFunction = function (t) {
-            return baseFn(circularOrigin.y, t);
+            return signalFn(circularOrigin.y, t);
         }
 
         // Frequency canvas
@@ -53,6 +53,10 @@ define(() => {
         this.setSpeed = function (speed) {
             parseSpeed = speed;
             drawCircle();
+        }
+
+        this.setSignalFunction = function (sigFn) {
+            signalFn = sigFn;
         }
 
         function clearCanvas(context, canvas) {

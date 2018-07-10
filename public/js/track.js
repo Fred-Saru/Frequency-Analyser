@@ -1,50 +1,68 @@
-define(["audio", "visualiser"], (Audio, Visualiser) => {
+define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisualiser) => {
 
     let trackCounter = 0;
+    let globalVisu;
 
     function Track(type, freq, amp = 1, speed = 1) {
         let isPlaying = true;
+        let isGlobal = false;
         let amplitude = amp;
+        let visualiser, audio;
+
+        type = type.toLowerCase();
+        isGlobal = type === 'global';
 
         initialize.apply(this);
-        const visualiser = new Visualiser(trackCounter, type, freq, amp, speed);
-        const audio = new Audio(type, freq, amp);
-        
+
+        if (!isGlobal) {
+            visualiser = new Visualiser(trackCounter, type, freq, amp, speed);
+            audio = new Audio(type, freq, amp);
+        } else {
+            visualiser = new gVisualiser(amp);
+            globalVisu = visualiser;
+        }
+
+
         function initialize() {
-            trackCounter += 1;
+            if (!isGlobal) { trackCounter++; }
             const container = document.getElementById('shelf');
-            
+
             const trackHeader = document.createElement('div');
             trackHeader.setAttribute('class', 'track__header');
-            trackHeader.setAttribute('data-target', `track_${trackCounter}`);
+            const target = isGlobal ? 'global' : trackCounter;
+            trackHeader.setAttribute('data-target', `track_${target}`);
             trackHeader.addEventListener('click', handleTrackToggle);
 
             const trackName = document.createElement('input');
             trackName.setAttribute('class', 'track__header-name')
-            trackName.value = `Track ${trackCounter}`;
+            trackName.value = `Track ${target}`;
             trackName.addEventListener('click', nopFunction);
 
             trackHeader.appendChild(trackName);
 
             const trackDiv = document.createElement('div');
             trackDiv.setAttribute('class', 'track__body');
-            trackDiv.id = `track_${trackCounter}`;
+            trackDiv.id = `track_${target}`;
 
             const controlDiv = document.createElement('div');
             controlDiv.setAttribute('class', 'control');
-            
-            const btnGroup = document.createElement('div');
-            btnGroup.setAttribute('class', 'btn-group');
 
-            const playBtn = document.createElement('button');
-            playBtn.innerText = "II";
-            playBtn.addEventListener('click', (event) => { handlePlayBtnClick.apply(this, event); });
+            if (!isGlobal) {
+                const btnGroup = document.createElement('div');
+                btnGroup.setAttribute('class', 'btn-group');
 
-            const optionBtn = document.createElement('button');
-            optionBtn.innerText = "O";
+                const playBtn = document.createElement('button');
+                playBtn.innerText = "II";
+                playBtn.addEventListener('click', (event) => { handlePlayBtnClick.apply(this, event); });
 
-            btnGroup.appendChild(playBtn);
-            btnGroup.appendChild(optionBtn);
+                const optionBtn = document.createElement('button');
+                optionBtn.innerText = "O";
+
+                btnGroup.appendChild(playBtn);
+                btnGroup.appendChild(optionBtn);
+
+                controlDiv.appendChild(btnGroup);
+            }
 
             const sliders = document.createElement('div');
             sliders.setAttribute('class', 'slider__container');
@@ -55,7 +73,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             volTitle.setAttribute('class', 'slider__title');
             volTitle.innerText = "Volume";
             const volSlider = document.createElement('input');
-            volSlider.id = `vol_slider_${trackCounter}`;
+            volSlider.id = `vol_slider_${target}`;
             volSlider.setAttribute('class', 'slider__range');
             volSlider.setAttribute('type', 'range');
             volSlider.setAttribute('min', '0');
@@ -66,7 +84,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             volSlider.addEventListener('mousedown', (event) => { activateVolumeChange.call(this, event); });
 
             const volInput = document.createElement('input');
-            volInput.id = `vol_input_${trackCounter}`;
+            volInput.id = `vol_input_${target}`;
             volInput.setAttribute('class', 'slider__input');
             volInput.setAttribute('type', 'number');
             volInput.setAttribute('min', '0');
@@ -78,34 +96,41 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             volBlock.appendChild(volSlider);
             volBlock.appendChild(volInput);
 
-            const freqBlock = document.createElement('div');
-            freqBlock.setAttribute('class', 'slider')
-            const freqTitle = document.createElement('span');
-            freqTitle.setAttribute('class', 'slider__title');
-            freqTitle.innerText = "Frequency";
-            const freqSlider = document.createElement('input');
-            freqSlider.id = `freq_slider_${trackCounter}`;
-            freqSlider.setAttribute('class', 'slider__range');
-            freqSlider.setAttribute('type', 'range');
-            freqSlider.setAttribute('min', '0');
-            freqSlider.setAttribute('max', '100');
-            freqSlider.setAttribute('value', freq.toString());
-            freqSlider.setAttribute('orient', 'vertical');
-            freqSlider.addEventListener('click', (event) => { handleFrequenceChange.call(this, event.currentTarget); });
-            freqSlider.addEventListener('mousedown', (event) => { activateFrequenceChange.call(this, event); });
+            sliders.appendChild(volBlock);
 
-            const freqInput = document.createElement('input');
-            freqInput.id = `freq_input_${trackCounter}`;
-            freqInput.setAttribute('class', 'slider__input');
-            freqInput.setAttribute('type', 'number');
-            freqInput.setAttribute('min', '0');
-            freqInput.setAttribute('max', '100');
-            freqInput.setAttribute('value', freq.toString());
-            freqInput.addEventListener('change', (event) => { handleFrequenceChange.call(this, event.currentTarget); });
+            if (!isGlobal) {
 
-            freqBlock.appendChild(freqTitle);
-            freqBlock.appendChild(freqSlider);
-            freqBlock.appendChild(freqInput);
+                const freqBlock = document.createElement('div');
+                freqBlock.setAttribute('class', 'slider')
+                const freqTitle = document.createElement('span');
+                freqTitle.setAttribute('class', 'slider__title');
+                freqTitle.innerText = "Frequency";
+                const freqSlider = document.createElement('input');
+                freqSlider.id = `freq_slider_${target}`;
+                freqSlider.setAttribute('class', 'slider__range');
+                freqSlider.setAttribute('type', 'range');
+                freqSlider.setAttribute('min', '0');
+                freqSlider.setAttribute('max', '100');
+                freqSlider.setAttribute('value', freq.toString());
+                freqSlider.setAttribute('orient', 'vertical');
+                freqSlider.addEventListener('click', (event) => { handleFrequenceChange.call(this, event.currentTarget); });
+                freqSlider.addEventListener('mousedown', (event) => { activateFrequenceChange.call(this, event); });
+
+                const freqInput = document.createElement('input');
+                freqInput.id = `freq_input_${target}`;
+                freqInput.setAttribute('class', 'slider__input');
+                freqInput.setAttribute('type', 'number');
+                freqInput.setAttribute('min', '0');
+                freqInput.setAttribute('max', '100');
+                freqInput.setAttribute('value', freq.toString());
+                freqInput.addEventListener('change', (event) => { handleFrequenceChange.call(this, event.currentTarget); });
+
+                freqBlock.appendChild(freqTitle);
+                freqBlock.appendChild(freqSlider);
+                freqBlock.appendChild(freqInput);
+
+                sliders.appendChild(freqBlock);
+            }
 
             const speedBlock = document.createElement('div');
             speedBlock.setAttribute('class', 'slider')
@@ -113,7 +138,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             speedTitle.setAttribute('class', 'slider__title');
             speedTitle.innerText = "Speed";
             const speedSlider = document.createElement('input');
-            speedSlider.id = `speed_slider_${trackCounter}`;
+            speedSlider.id = `speed_slider_${target}`;
             speedSlider.setAttribute('class', 'slider__range');
             speedSlider.setAttribute('type', 'range');
             speedSlider.setAttribute('min', '0');
@@ -125,7 +150,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             speedSlider.addEventListener('mousedown', (event) => { activateSpeedChange.call(this, event); });
 
             const speedInput = document.createElement('input');
-            speedInput.id = `speed_input_${trackCounter}`;
+            speedInput.id = `speed_input_${target}`;
             speedInput.setAttribute('class', 'slider__input');
             speedInput.setAttribute('type', 'number');
             speedInput.setAttribute('min', '0');
@@ -138,16 +163,13 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             speedBlock.appendChild(speedSlider);
             speedBlock.appendChild(speedInput);
 
-            sliders.appendChild(volBlock);
-            sliders.appendChild(freqBlock);
             sliders.appendChild(speedBlock);
 
-            controlDiv.appendChild(btnGroup);
             controlDiv.appendChild(sliders);
 
             const displayDiv = document.createElement("div");
             displayDiv.setAttribute('class', 'display');
-            displayDiv.id = `display-track${trackCounter}`;
+            displayDiv.id = `display-track-${target}`;
 
             trackDiv.appendChild(controlDiv);
             trackDiv.appendChild(displayDiv);
@@ -160,7 +182,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             const target = event.currentTarget.dataset['target'];
             const elTarget = document.getElementById(target);
 
-            if(elTarget.classList.contains('close')) {
+            if (elTarget.classList.contains('close')) {
                 elTarget.classList.remove('close');
             } else {
                 elTarget.classList.add('close');
@@ -168,7 +190,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
         }
 
         function handlePlayBtnClick(event) {
-            isPlaying ? this.pause(): this.play();
+            isPlaying ? this.pause() : this.play();
         }
 
         function activateVolumeChange(event) {
@@ -177,7 +199,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             const remove = removeDrag.bind(this)
 
             target.addEventListener('mousemove', handle);
-            target.addEventListener('mouseup',remove);   
+            target.addEventListener('mouseup', remove);
 
             function removeDrag(event) {
                 const target = event.currentTarget;
@@ -188,7 +210,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
 
         function handleVolumeChange(target) {
             setTimeout(debounceVol.bind(this), 10);
-            
+
             function debounceVol() {
                 const id = target.id.split('_')[2];
 
@@ -206,7 +228,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             const remove = removeDrag.bind(this)
 
             target.addEventListener('mousemove', handle);
-            target.addEventListener('mouseup',remove);   
+            target.addEventListener('mouseup', remove);
 
             function removeDrag(event) {
                 const target = event.currentTarget;
@@ -233,7 +255,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
             const remove = removeDrag.bind(this)
 
             target.addEventListener('mousemove', handle);
-            target.addEventListener('mouseup',remove);   
+            target.addEventListener('mouseup', remove);
 
             function removeDrag(event) {
                 const target = event.currentTarget;
@@ -247,7 +269,7 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
 
             function debounceSpeed() {
                 const id = target.id.split('_')[2];
-            
+
                 document.getElementById(`speed_slider_${id}`).value = target.value;
                 document.getElementById(`speed_input_${id}`).value = target.value;
                 this.setSpeed(target.value);
@@ -261,40 +283,57 @@ define(["audio", "visualiser"], (Audio, Visualiser) => {
 
         // Public Methods
 
-        this.play = function() {
-            if(!isPlaying) {
+        this.play = function () {
+            if (!isPlaying) {
                 audio.play();
                 visualiser.setAmplitude(amplitude);
                 isPlaying = true;
             }
         }
-    
-        this.pause = function() {
-            if(isPlaying) {
+
+        this.pause = function () {
+            if (isPlaying) {
                 audio.pause();
                 visualiser.setAmplitude(0);
                 isPlaying = false;
             }
         }
-    
-        this.setType = function(type) {
-            audio.setType(type);
-            visualiser.setType(type);
-        }
-    
-        this.setFrequency = function(frequency) {
-            audio.setFrequency(frequency);
-            visualiser.setFrequency(frequency);
+
+        this.getSignalFunction = function () {
+            return visualiser.getSignalFunction();
         }
 
-        this.setSpeed = function(speed) {
+        if (!isGlobal) {
+            this.setType = function (type) {
+                audio.setType(type);
+                visualiser.setType(type);
+                globalVisu.refresh();
+            }
+        }
+
+        if (!isGlobal) {
+            this.setFrequency = function (frequency) {
+                audio.setFrequency(frequency);
+                visualiser.setFrequency(frequency);
+                globalVisu.refresh();
+            }
+        }
+
+        this.setSpeed = function (speed) {
             visualiser.setSpeed(speed);
         }
-    
-        this.setAmplitude = function(amp) {
-            audio.setVolume(amp);
+
+        this.setAmplitude = function (amp) {
+            if (!isGlobal) { audio.setVolume(amp); }
             visualiser.setAmplitude(amp);
             amplitude = amp;
+            globalVisu.refresh();
+        }
+
+        if (isGlobal) {
+            this.setTracks = function (tracks) {
+                visualiser.setTracks(tracks);
+            }
         }
     };
 
