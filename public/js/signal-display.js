@@ -1,6 +1,8 @@
 define(() => {
 
-    function Sinusoid(id, signalFn, speed = 1) {
+    function Display(id, signalFn, speed = 1) {
+        const publicApi = {};
+
         let parseSpeed = speed;
         const radDegRatio = Math.PI / 180;
 
@@ -43,21 +45,6 @@ define(() => {
         drawSignal();
         drawCircle();
         drawFrequencies();
-
-        this.refresh = function () {
-            drawSignal();
-            drawCircle();
-            drawFrequencies();
-        }
-
-        this.setSpeed = function (speed) {
-            parseSpeed = speed;
-            drawCircle();
-        }
-
-        this.setSignalFunction = function (sigFn) {
-            signalFn = sigFn;
-        }
 
         function clearCanvas(context, canvas) {
             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -167,7 +154,24 @@ define(() => {
             showAxes(freqContext, freqCanvas, freqOrigin);
             showFrequencies();
         }
+
+        publicApi.refresh = function refresh() {
+            drawSignal();
+            drawCircle();
+            drawFrequencies();
+        }
+
+        publicApi.setSpeed = function setSpeed(speed) {
+            parseSpeed = speed;
+            drawCircle();
+        }
+
+        publicApi.setSignalFunction = function setSignalFunction(sigFn) {
+            signalFn = sigFn;
+        }
+
+        return publicApi;
     }
 
-    return Sinusoid;
+    return Display;
 });

@@ -1,6 +1,8 @@
-define(["signals/sinusoid"], (Sinusoid) => {
+define(["signal-display"], (Display) => {
 
-    function Visualiser(id, type, freq, amp = 1, speed = 1) {
+    function Generator(id, type, freq, amp = 1, speed = 1) {
+        const publicApi = {};
+
         if (!type || !freq || !id) {
             throw `The id, waveform and frequence are mandatory.`;
         }
@@ -16,36 +18,7 @@ define(["signals/sinusoid"], (Sinusoid) => {
         let sine, signalFn;
 
         signalFn = getSignalFunction(type);
-        sine = new Sinusoid(id, signalFn, speed);
-
-        this.setAmplitude = function (amp) {
-            amplitude = +amp;
-            sine.refresh();
-        }
-
-        this.setFrequency = function (freq) {
-            frequency = +freq;
-            sine.refresh();
-        }
-
-        this.setSpeed = function (speed) {
-            sine.setSpeed(speed);
-        }
-
-        this.setType = function (typ) {
-            typ = typ.toLowerCase();
-
-            if (typ !== 'sine' && typ !== 'triangle' && typ != 'square' && typ != 'sawtooth') {
-                throw `The waveform can be of the following type: sine, square, triangle or sawtooth.`;
-            }
-
-            signalFn = getSignalFunction(typ);
-            sine.setSignalFunction(signalFn);
-        }
-
-        this.getSignalFunction = function() {
-            return signalFn;
-        }
+        sine = Display(id, signalFn, speed);
 
         function getSignalFunction(typ) {
             switch (type) {
@@ -73,6 +46,37 @@ define(["signals/sinusoid"], (Sinusoid) => {
             }
         }
 
+        publicApi.setAmplitude = function setAmplitude(amp) {
+            amplitude = +amp;
+            sine.refresh();
+        }
+
+        publicApi.setFrequency = function setFrequency(freq) {
+            frequency = +freq;
+            sine.refresh();
+        }
+
+        publicApi.setSpeed = function setSpeed(speed) {
+            sine.setSpeed(speed);
+        }
+
+        publicApi.setType = function setType(typ) {
+            typ = typ.toLowerCase();
+
+            if (typ !== 'sine' && typ !== 'triangle' && typ != 'square' && typ != 'sawtooth') {
+                throw `The waveform can be of the following type: sine, square, triangle or sawtooth.`;
+            }
+
+            signalFn = getSignalFunction(typ);
+            sine.setSignalFunction(signalFn);
+        }
+
+        publicApi.getSignalFunction = function getSignalFunction() {
+            return signalFn;
+        }
+
+        return publicApi;
     }
-    return Visualiser;
+    
+    return Generator;
 });

@@ -1,13 +1,17 @@
-define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisualiser) => {
+define(["audio", "signal-generator", "global-generator"], (Audio, Generator, GlobalGenerator) => {
 
     let trackCounter = 0;
     let globalVisu;
 
     function Track(type, freq, amp = 1, speed = 1) {
+        const publicApi = {};
+        let trackId = 0;
+
+
         let isPlaying = true;
         let isGlobal = false;
         let amplitude = amp;
-        let visualiser, audio;
+        let generator, audio;
 
         type = type.toLowerCase();
         isGlobal = type === 'global';
@@ -15,34 +19,43 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
         initialize.apply(this);
 
         if (!isGlobal) {
-            visualiser = new Visualiser(trackCounter, type, freq, amp, speed);
-            audio = new Audio(type, freq, amp);
+            generator = Generator(trackCounter, type, freq, amp, speed);
+            audio = Audio(type, freq, amp);
         } else {
-            visualiser = new gVisualiser(amp);
-            globalVisu = visualiser;
+            generator = GlobalGenerator(amp);
+            globalVisu = generator;
         }
 
 
         function initialize() {
             if (!isGlobal) { trackCounter++; }
+            trackId = isGlobal ? 'global' : trackCounter;
+
             const container = document.getElementById('shelf');
 
             const trackHeader = document.createElement('div');
             trackHeader.setAttribute('class', 'track__header');
-            const target = isGlobal ? 'global' : trackCounter;
-            trackHeader.setAttribute('data-target', `track_${target}`);
+            trackHeader.setAttribute('data-target', `track_${trackId}`);
             trackHeader.addEventListener('click', handleTrackToggle);
 
-            const trackName = document.createElement('input');
+            const trackName = document.createElement('span');
             trackName.setAttribute('class', 'track__header-name')
-            trackName.value = `Track ${target}`;
-            trackName.addEventListener('click', nopFunction);
-
+            trackName.innerText = `Track ${trackId}`;
             trackHeader.appendChild(trackName);
+
+            if(!isGlobal) {
+                const trackDelete = document.createElement('button');
+                trackDelete.setAttribute('type', 'button');
+                trackDelete.setAttribute('class', 'track__delete-btn');
+                trackDelete.innerText = 'X';
+                trackDelete.addEventListener('click', handleDeleteTrack);
+                
+                trackHeader.appendChild(trackDelete);
+            }
 
             const trackDiv = document.createElement('div');
             trackDiv.setAttribute('class', 'track__body');
-            trackDiv.id = `track_${target}`;
+            trackDiv.id = `track_${trackId}`;
 
             const controlDiv = document.createElement('div');
             controlDiv.setAttribute('class', 'control');
@@ -73,7 +86,7 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
             volTitle.setAttribute('class', 'slider__title');
             volTitle.innerText = "Volume";
             const volSlider = document.createElement('input');
-            volSlider.id = `vol_slider_${target}`;
+            volSlider.id = `vol_slider_${trackId}`;
             volSlider.setAttribute('class', 'slider__range');
             volSlider.setAttribute('type', 'range');
             volSlider.setAttribute('min', '0');
@@ -84,7 +97,7 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
             volSlider.addEventListener('mousedown', (event) => { activateVolumeChange.call(this, event); });
 
             const volInput = document.createElement('input');
-            volInput.id = `vol_input_${target}`;
+            volInput.id = `vol_input_${trackId}`;
             volInput.setAttribute('class', 'slider__input');
             volInput.setAttribute('type', 'number');
             volInput.setAttribute('min', '0');
@@ -106,7 +119,7 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
                 freqTitle.setAttribute('class', 'slider__title');
                 freqTitle.innerText = "Frequency";
                 const freqSlider = document.createElement('input');
-                freqSlider.id = `freq_slider_${target}`;
+                freqSlider.id = `freq_slider_${trackId}`;
                 freqSlider.setAttribute('class', 'slider__range');
                 freqSlider.setAttribute('type', 'range');
                 freqSlider.setAttribute('min', '0');
@@ -117,7 +130,7 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
                 freqSlider.addEventListener('mousedown', (event) => { activateFrequenceChange.call(this, event); });
 
                 const freqInput = document.createElement('input');
-                freqInput.id = `freq_input_${target}`;
+                freqInput.id = `freq_input_${trackId}`;
                 freqInput.setAttribute('class', 'slider__input');
                 freqInput.setAttribute('type', 'number');
                 freqInput.setAttribute('min', '0');
@@ -138,7 +151,7 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
             speedTitle.setAttribute('class', 'slider__title');
             speedTitle.innerText = "Speed";
             const speedSlider = document.createElement('input');
-            speedSlider.id = `speed_slider_${target}`;
+            speedSlider.id = `speed_slider_${trackId}`;
             speedSlider.setAttribute('class', 'slider__range');
             speedSlider.setAttribute('type', 'range');
             speedSlider.setAttribute('min', '0');
@@ -150,7 +163,7 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
             speedSlider.addEventListener('mousedown', (event) => { activateSpeedChange.call(this, event); });
 
             const speedInput = document.createElement('input');
-            speedInput.id = `speed_input_${target}`;
+            speedInput.id = `speed_input_${trackId}`;
             speedInput.setAttribute('class', 'slider__input');
             speedInput.setAttribute('type', 'number');
             speedInput.setAttribute('min', '0');
@@ -169,13 +182,27 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
 
             const displayDiv = document.createElement("div");
             displayDiv.setAttribute('class', 'display');
-            displayDiv.id = `display-track-${target}`;
+            displayDiv.id = `display-track-${trackId}`;
 
             trackDiv.appendChild(controlDiv);
             trackDiv.appendChild(displayDiv);
 
             container.appendChild(trackHeader);
             container.appendChild(trackDiv);
+        }
+
+        function handleDeleteTrack(event) {
+            event.stopPropagation();
+            event.preventDefault();
+
+            document.getElementById(`track_${trackId}`).remove();
+            document.querySelector(`[data-target=track_${trackId}`).remove();
+            audio.stop();
+
+            const customEvent = new CustomEvent("deletetrack", { "detail": {trackId: trackId} });
+            document.dispatchEvent(customEvent);
+
+
         }
 
         function handleTrackToggle(event) {
@@ -190,7 +217,7 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
         }
 
         function handlePlayBtnClick(event) {
-            isPlaying ? this.pause() : this.play();
+            isPlaying ? pause() : play();
         }
 
         function activateVolumeChange(event) {
@@ -218,7 +245,7 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
                 document.getElementById(`vol_input_${id}`).value = target.value;
 
                 const volume = target.value / 100;
-                this.setAmplitude(volume);
+                setAmplitude(volume);
             }
         }
 
@@ -245,7 +272,7 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
 
                 document.getElementById(`freq_slider_${id}`).value = target.value;
                 document.getElementById(`freq_input_${id}`).value = target.value;
-                this.setFrequency(target.value);
+                setFrequency(target.value);
             }
         }
 
@@ -272,69 +299,76 @@ define(["audio", "visualiser", "globalVisualiser"], (Audio, Visualiser, gVisuali
 
                 document.getElementById(`speed_slider_${id}`).value = target.value;
                 document.getElementById(`speed_input_${id}`).value = target.value;
-                this.setSpeed(target.value);
+                setSpeed(target.value);
             }
-        }
-
-        function nopFunction(event) {
-            event.stopPropagation();
-            event.preventDefault();
         }
 
         // Public Methods
 
-        this.play = function () {
+        function play() {
             if (!isPlaying) {
                 audio.play();
-                visualiser.setAmplitude(amplitude);
+                generator.setAmplitude(amplitude);
                 isPlaying = true;
             }
         }
 
-        this.pause = function () {
+        function pause() {
             if (isPlaying) {
                 audio.pause();
-                visualiser.setAmplitude(0);
+                generator.setAmplitude(0);
                 isPlaying = false;
             }
         }
 
-        this.getSignalFunction = function () {
-            return visualiser.getSignalFunction();
+        function getSignalFunction() {
+            return generator.getSignalFunction();
         }
 
-        if (!isGlobal) {
-            this.setType = function (type) {
-                audio.setType(type);
-                visualiser.setType(type);
-                globalVisu.refresh();
-            }
+        function getTrackId() {
+            return trackId;
         }
 
-        if (!isGlobal) {
-            this.setFrequency = function (frequency) {
-                audio.setFrequency(frequency);
-                visualiser.setFrequency(frequency);
-                globalVisu.refresh();
-            }
+        function setType(type) {
+            audio.setType(type);
+            generator.setType(type);
+            globalVisu.refresh();
         }
 
-        this.setSpeed = function (speed) {
-            visualiser.setSpeed(speed);
+        function setFrequency(frequency) {
+            audio.setFrequency(frequency);
+            generator.setFrequency(frequency);
+            globalVisu.refresh();
         }
 
-        this.setAmplitude = function (amp) {
+        function setSpeed(speed) {
+            generator.setSpeed(speed);
+        }
+
+        function setAmplitude(amp) {
             if (!isGlobal) { audio.setVolume(amp); }
-            visualiser.setAmplitude(amp);
+            generator.setAmplitude(amp);
             amplitude = amp;
             globalVisu.refresh();
         }
 
-        if (isGlobal) {
-            this.setTracks = function (tracks) {
-                visualiser.setTracks(tracks);
-            }
+        function setTracks(tracks) {
+            generator.setTracks(tracks);
         }
+
+        if (!isGlobal) {
+         publicApi.setType = setType;
+         publicApi.setFrequency = setFrequency;
+        } else {
+            publicApi.setTracks = setTracks;
+        }
+
+        publicApi.setAmplitude = setAmplitude;
+        publicApi.setSpeed = setSpeed;
+        publicApi.getSignalFunction = getSignalFunction;
+        publicApi.getTrackId = getTrackId;
+
+        return publicApi;
     };
 
     return Track;

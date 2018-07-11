@@ -6,6 +6,8 @@ define(() => {
     masterGain.connect(ctx.destination);
 
     function Audio(type, freq, amp = 1) {
+        const publicApi = {};
+
         if(!type || !freq || !amp) {
             throw `The waveform, volume and frequency are mandatory.`;
         }
@@ -35,21 +37,25 @@ define(() => {
 
         let isPlaying = true;
 
-        this.play = function() {
+        publicApi.play = function play() {
             if(!isPlaying) {
                 gain.gain.setTargetAtTime(volume, ctx.currentTime, 0.015);
                 isPlaying = true;
             }
         }
 
-        this.pause = function() {
+        publicApi.pause = function pause() {
             if(isPlaying) {
                 gain.gain.setTargetAtTime(0, ctx.currentTime, 0.015);
                 isPlaying = false;
             }
         }
 
-        this.setVolume = function(volume) {   
+        publicApi.stop = function stop() {
+            oscillator.stop(0.0015);
+        }
+
+        publicApi.setVolume = function setVolume(volume) {   
             if( volume < gain.minValue || gain.maxValue < volume) {
                 throw `the gain should be in the range [${gain.minValue}, ${gain.maxValue}].`;
             }
@@ -58,9 +64,11 @@ define(() => {
             volume = volume;
         }
 
-        this.setFrequency = function(frequency) {
+        publicApi.setFrequency = function setFrequency(frequency) {
             oscillator.frequency.value = frequency;
         }
+
+        return publicApi;
     }
 
     return Audio;

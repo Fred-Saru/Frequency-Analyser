@@ -1,6 +1,8 @@
-define(["signals/sinusoid"], (Sinusoid) => {
+define(["signal-display"], (Display) => {
 
-    function globalVisualiser(amp) {
+    function GlobalGenerator(amp) {
+        const publicApi = {};
+
         let tracks;
         let sine;
         let amplitude = amp;
@@ -16,27 +18,29 @@ define(["signals/sinusoid"], (Sinusoid) => {
         };
 
         (function initialize() {
-            sine = new Sinusoid('global', globalTrackFn, 1);
+            sine = Display('global', globalTrackFn, 1);
         })();
 
-        this.setTracks = function (newTracks) {
+        publicApi.setTracks = function setTracks(newTracks) {
             tracks = newTracks;
             sine.refresh();
         }
 
-        this.setAmplitude = function (amp) {
+        publicApi.setAmplitude = function setAmplitude(amp) {
             amplitude = +amp;
             sine.refresh();
         }
 
-        this.setSpeed = function (speed) {
+        publicApi.setSpeed = function setSpeed(speed) {
             sine.setSpeed(speed);
         }
 
-        this.refresh = function() {
+        publicApi.refresh = function refresh() {
             sine.refresh();
         }
+
+        return publicApi;
     }
 
-    return globalVisualiser;
+    return GlobalGenerator;
 });
