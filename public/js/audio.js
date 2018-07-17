@@ -68,6 +68,16 @@ define(() => {
             oscillator.frequency.value = frequency;
         }
 
+        publicApi.setType = function setType(type) {
+            type = type.toLowerCase();
+
+            if(type !== 'sine' && type !== 'triangle' && type != 'square' && type != 'sawtooth') {
+                throw `The waveform can be of the following type: sine, square, triangle or sawtooth.`;
+            }
+
+            oscillator.type = type;
+        }
+
         return publicApi;
     }
 

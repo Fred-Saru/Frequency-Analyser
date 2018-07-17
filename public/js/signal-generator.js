@@ -69,6 +69,7 @@ define(["signal-display"], (Display) => {
 
             signalFn = getSignalFunction(typ);
             sine.setSignalFunction(signalFn);
+            sine.refresh();
         }
 
         publicApi.getSignalFunction = function getSignalFunction() {

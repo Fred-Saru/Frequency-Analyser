@@ -65,14 +65,39 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
                 btnGroup.setAttribute('class', 'btn-group');
 
                 const playBtn = document.createElement('button');
-                playBtn.innerText = "II";
-                playBtn.addEventListener('click', (event) => { handlePlayBtnClick.apply(this, event); });
+                playBtn.innerText = "Pause";
+                playBtn.addEventListener('click', (event) => { handlePlayBtnClick.call(this, event); });
 
-                const optionBtn = document.createElement('button');
-                optionBtn.innerText = "O";
+                const waveGroup = document.createElement('div');
+                waveGroup.setAttribute('class', 'wave-group');
+
+                const sineBtn = document.createElement('button');
+                sineBtn.setAttribute('data-wave', 'sine');
+                sineBtn.innerText = "Si";
+                sineBtn.addEventListener('click', handleTypeChange);
+
+                const squareBtn = document.createElement('button');
+                squareBtn.setAttribute('data-wave', 'square');
+                squareBtn.innerText = "Sq";
+                squareBtn.addEventListener('click', handleTypeChange);
+
+                const triangleBtn = document.createElement('button');
+                triangleBtn.setAttribute('data-wave', 'triangle');
+                triangleBtn.innerText = "T";
+                triangleBtn.addEventListener('click', handleTypeChange);
+
+                const sawtoothBtn = document.createElement('button');
+                sawtoothBtn.setAttribute('data-wave', 'sawtooth');
+                sawtoothBtn.innerText = "Sw";
+                sawtoothBtn.addEventListener('click', handleTypeChange);
+
+                waveGroup.appendChild(sineBtn);
+                waveGroup.appendChild(squareBtn);
+                waveGroup.appendChild(triangleBtn);
+                waveGroup.appendChild(sawtoothBtn);
 
                 btnGroup.appendChild(playBtn);
-                btnGroup.appendChild(optionBtn);
+                btnGroup.appendChild(waveGroup);
 
                 controlDiv.appendChild(btnGroup);
             }
@@ -191,6 +216,15 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
             container.appendChild(trackDiv);
         }
 
+        function handleTypeChange(event) {
+            const target = event.currentTarget;
+            const type = target.dataset.wave;
+
+            if(type) {
+                setType(type);
+            }
+        }
+
         function handleDeleteTrack(event) {
             event.stopPropagation();
             event.preventDefault();
@@ -217,7 +251,16 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
         }
 
         function handlePlayBtnClick(event) {
-            isPlaying ? pause() : play();
+            const target = event.currentTarget;
+            
+            if (isPlaying) {
+                target.innerText = "Play";
+                pause();
+            } else {
+                target.innerText = "Pause";
+                play();
+            }
+            
         }
 
         function activateVolumeChange(event) {

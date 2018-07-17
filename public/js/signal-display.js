@@ -4,6 +4,7 @@ define(() => {
         const publicApi = {};
 
         let parseSpeed = speed;
+        let signal = signalFn;
         const radDegRatio = Math.PI / 180;
 
         const parent = document.getElementById(`display-track-${id}`);
@@ -18,7 +19,7 @@ define(() => {
         const signalOrigin = { x: 10, y: 0.5 * signalCanvas.height };
         const signalContext = signalCanvas.getContext('2d');
         const signalFunction = function (t) {
-            return signalFn(signalOrigin.y, t * radDegRatio);
+            return signal(signalOrigin.y, t * radDegRatio);
         }
 
         // Circular canvas
@@ -30,7 +31,7 @@ define(() => {
         const circularOrigin = { x: 0.5 * circularCanvas.width, y: 0.5 * circularCanvas.height };
         const circularContext = circularCanvas.getContext('2d');
         const circularFunction = function (t) {
-            return signalFn(circularOrigin.y, t);
+            return signal(circularOrigin.y, t);
         }
 
         // Frequency canvas
@@ -167,7 +168,7 @@ define(() => {
         }
 
         publicApi.setSignalFunction = function setSignalFunction(sigFn) {
-            signalFn = sigFn;
+            signal = signalFn;
         }
 
         return publicApi;
