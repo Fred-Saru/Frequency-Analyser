@@ -26,9 +26,9 @@ requirejs(["track"], function (Track) {
 
   (function initialize() {  
     tracks.push(Track('sine', 1, 0.8, 1));
-    tracks.push(Track('square', 1, 0.8, 1));
-    tracks.push(Track('triangle', 1, 0.8, 1));
-    tracks.push(Track('sawtooth', 1, 0.8, 1));
+//     tracks.push(Track('square', 1, 0.8, 1));
+//     tracks.push(Track('triangle', 1, 0.8, 1));
+//     tracks.push(Track('sawtooth', 1, 0.8, 1));
 
     updateGlobalTrack();
   })();
