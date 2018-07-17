@@ -43,13 +43,13 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
             trackName.innerText = `Track ${trackId}`;
             trackHeader.appendChild(trackName);
 
-            if(!isGlobal) {
+            if (!isGlobal) {
                 const trackDelete = document.createElement('button');
                 trackDelete.setAttribute('type', 'button');
                 trackDelete.setAttribute('class', 'track__delete-btn');
-                trackDelete.innerText = 'X';
                 trackDelete.addEventListener('click', handleDeleteTrack);
-                
+
+                trackDelete.appendChild(generateIcon('icon-close'));
                 trackHeader.appendChild(trackDelete);
             }
 
@@ -65,31 +65,31 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
                 btnGroup.setAttribute('class', 'btn-group');
 
                 const playBtn = document.createElement('button');
-                playBtn.innerText = "Pause";
                 playBtn.addEventListener('click', (event) => { handlePlayBtnClick.call(this, event); });
+                playBtn.appendChild(generateIcon('icon-pause'));
 
                 const waveGroup = document.createElement('div');
                 waveGroup.setAttribute('class', 'wave-group');
 
                 const sineBtn = document.createElement('button');
                 sineBtn.setAttribute('data-wave', 'sine');
-                sineBtn.innerText = "Si";
                 sineBtn.addEventListener('click', handleTypeChange);
+                sineBtn.appendChild(generateIcon('icon-sine'));
 
                 const squareBtn = document.createElement('button');
                 squareBtn.setAttribute('data-wave', 'square');
-                squareBtn.innerText = "Sq";
                 squareBtn.addEventListener('click', handleTypeChange);
+                squareBtn.appendChild(generateIcon('icon-square'));
 
                 const triangleBtn = document.createElement('button');
                 triangleBtn.setAttribute('data-wave', 'triangle');
-                triangleBtn.innerText = "T";
                 triangleBtn.addEventListener('click', handleTypeChange);
+                triangleBtn.appendChild(generateIcon('icon-triangle'));
 
                 const sawtoothBtn = document.createElement('button');
                 sawtoothBtn.setAttribute('data-wave', 'sawtooth');
-                sawtoothBtn.innerText = "Sw";
                 sawtoothBtn.addEventListener('click', handleTypeChange);
+                sawtoothBtn.appendChild(generateIcon('icon-sawtooth'));
 
                 waveGroup.appendChild(sineBtn);
                 waveGroup.appendChild(squareBtn);
@@ -216,11 +216,23 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
             container.appendChild(trackDiv);
         }
 
+        function generateIcon(iconName) {
+            const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svgEl.setAttribute('viewBox', '0 0 1000 1000');
+
+            const useEl = document.createElementNS("http://www.w3.org/2000/svg", "use");;
+            useEl.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#${iconName}`);
+
+            svgEl.appendChild(useEl);
+
+            return svgEl;
+        }
+
         function handleTypeChange(event) {
             const target = event.currentTarget;
             const type = target.dataset.wave;
 
-            if(type) {
+            if (type) {
                 setType(type);
             }
         }
@@ -233,7 +245,7 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
             document.querySelector(`[data-target=track_${trackId}`).remove();
             audio.stop();
 
-            const customEvent = new CustomEvent("deletetrack", { "detail": {trackId: trackId} });
+            const customEvent = new CustomEvent("deletetrack", { "detail": { trackId: trackId } });
             document.dispatchEvent(customEvent);
 
 
@@ -252,15 +264,14 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
 
         function handlePlayBtnClick(event) {
             const target = event.currentTarget;
-            
+
             if (isPlaying) {
-                target.innerText = "Play";
+                target.querySelector('use').setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#icon-play');
                 pause();
             } else {
-                target.innerText = "Pause";
+                target.querySelector('use').setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#icon-pause');
                 play();
             }
-            
         }
 
         function activateVolumeChange(event) {
@@ -400,8 +411,8 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
         }
 
         if (!isGlobal) {
-         publicApi.setType = setType;
-         publicApi.setFrequency = setFrequency;
+            publicApi.setType = setType;
+            publicApi.setFrequency = setFrequency;
         } else {
             publicApi.setTracks = setTracks;
         }

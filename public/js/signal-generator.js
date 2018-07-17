@@ -21,7 +21,7 @@ define(["signal-display"], (Display) => {
         sine = Display(id, signalFn, speed);
 
         function getSignalFunction(typ) {
-            switch (type) {
+            switch (typ) {
                 case 'sine':
                     return function sinusFn(o, t) {
                         return (amplitude * o) * Math.sin(t * frequency);

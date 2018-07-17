@@ -18,7 +18,7 @@ define(() => {
         parent.appendChild(signalCanvas);
         const signalOrigin = { x: 10, y: 0.5 * signalCanvas.height };
         const signalContext = signalCanvas.getContext('2d');
-        const signalFunction = function (t) {
+        function signalFunction(t) {
             return signal(signalOrigin.y, t * radDegRatio);
         }
 
@@ -30,7 +30,8 @@ define(() => {
         parent.appendChild(circularCanvas);
         const circularOrigin = { x: 0.5 * circularCanvas.width, y: 0.5 * circularCanvas.height };
         const circularContext = circularCanvas.getContext('2d');
-        const circularFunction = function (t) {
+        
+        function circularFunction(t) {
             return signal(circularOrigin.y, t);
         }
 
@@ -168,7 +169,7 @@ define(() => {
         }
 
         publicApi.setSignalFunction = function setSignalFunction(sigFn) {
-            signal = signalFn;
+            signal = sigFn;
         }
 
         return publicApi;
