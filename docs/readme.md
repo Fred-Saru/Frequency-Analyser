@@ -5,8 +5,8 @@ After watching [this video](https://www.youtube.com/watch?v=spUNpyF58BY) of 3Blu
   
 ## Screenshots
  
-![A custom track](docs/ScreenshotTrack.png)
+![A custom track](./ScreenshotTrack.png)
 When you add a track, you will get this. You can configure the signal with the inputs present on the left side.
 
-![The global track](docs/ScreenshotGlobal.png)
+![The global track](./ScreenshotGlobal.png)
 This track is not modifiable. This is an accumulation of every track you have created and so you can see here multiple frequency spike on the bottom right graph.
