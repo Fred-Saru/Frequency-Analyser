@@ -15,10 +15,10 @@ define(["signal-display"], (Display) => {
 
         let amplitude = amp;
         let frequency = freq;
-        let sine, signalFn;
+        let display, signalFn;
 
         signalFn = getSignalFunction(type);
-        sine = Display(id, signalFn, speed);
+        display = Display(id, signalFn, speed);
 
         function getSignalFunction(typ) {
             switch (typ) {
@@ -48,16 +48,16 @@ define(["signal-display"], (Display) => {
 
         publicApi.setAmplitude = function setAmplitude(amp) {
             amplitude = +amp;
-            sine.refresh();
+            display.refresh();
         }
 
         publicApi.setFrequency = function setFrequency(freq) {
             frequency = +freq;
-            sine.refresh();
+            display.refresh();
         }
 
         publicApi.setSpeed = function setSpeed(speed) {
-            sine.setSpeed(speed);
+            display.setSpeed(speed);
         }
 
         publicApi.setType = function setType(typ) {
@@ -68,8 +68,8 @@ define(["signal-display"], (Display) => {
             }
 
             signalFn = getSignalFunction(typ);
-            sine.setSignalFunction(signalFn);
-            sine.refresh();
+            display.setSignalFunction(signalFn);
+            display.refresh();
         }
 
         publicApi.getSignalFunction = function getSignalFunction() {

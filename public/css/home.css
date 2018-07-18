@@ -15,6 +15,14 @@ svg {
     vertical-align: middle;
 }
 
+button:focus {
+    outline: 0;
+}
+
+.credit {
+    text-align: center;
+}
+
 .track__header {
     text-align: center;
     background-color: turquoise;
@@ -89,6 +97,15 @@ svg {
     text-align: center;
 }
 
+.btn-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.active {
+    fill: turquoise;
+}
+
 .btn-group button {
     cursor: pointer;
     margin: 0;
@@ -98,10 +115,21 @@ svg {
     background-color: transparent;
 }
 
+.btn-group svg {
+    width: 50px;
+    height: 50px;
+}
+
 .wave-group {
     display: flex;
-    flex-direction: row;
+    justify-content: center;
     flex-wrap: wrap;
+}
+
+.wave-group svg {
+    width: 40px;
+    height: 40px;
+    margin: 7px;
 }
 
 .add-track {

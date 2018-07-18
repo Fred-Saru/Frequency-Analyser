@@ -24,6 +24,7 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
         } else {
             generator = GlobalGenerator(amp);
             globalVisu = generator;
+            audio = Audio(type);
         }
 
 
@@ -72,6 +73,7 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
                 waveGroup.setAttribute('class', 'wave-group');
 
                 const sineBtn = document.createElement('button');
+                sineBtn.setAttribute('class', 'active');
                 sineBtn.setAttribute('data-wave', 'sine');
                 sineBtn.addEventListener('click', handleTypeChange);
                 sineBtn.appendChild(generateIcon('icon-sine'));
@@ -232,6 +234,9 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
             const target = event.currentTarget;
             const type = target.dataset.wave;
 
+            document.querySelector('.active').classList.remove('active');
+            target.classList.add('active');
+
             if (type) {
                 setType(type);
             }
@@ -357,13 +362,12 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
             }
         }
 
-        // Public Methods
-
         function play() {
             if (!isPlaying) {
                 audio.play();
                 generator.setAmplitude(amplitude);
                 isPlaying = true;
+                globalVisu.refresh();
             }
         }
 
@@ -372,6 +376,7 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
                 audio.pause();
                 generator.setAmplitude(0);
                 isPlaying = false;
+                globalVisu.refresh();
             }
         }
 
@@ -400,7 +405,11 @@ define(["audio", "signal-generator", "global-generator"], (Audio, Generator, Glo
         }
 
         function setAmplitude(amp) {
-            if (!isGlobal) { audio.setVolume(amp); }
+            if (!isGlobal) { 
+                audio.setVolume(amp); 
+            } else {
+                audio.setMasterVolume(amp);
+            }
             generator.setAmplitude(amp);
             amplitude = amp;
             globalVisu.refresh();

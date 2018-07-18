@@ -8,11 +8,27 @@ define(() => {
     function Audio(type, freq, amp = 1) {
         const publicApi = {};
 
-        if(!type || !freq || !amp) {
-            throw `The waveform, volume and frequency are mandatory.`;
+        if(!type) {
+            throw `The waveform is mandatory.`;
         }
 
         type = type.toLowerCase();
+
+        if(type === 'global') {
+            publicApi.setMasterVolume = function setMasterVolume(vol) {
+                if( vol < masterGain.minValue || masterGain.maxValue < vol) {
+                    throw `the gain should be in the range [${masterGain.minValue}, ${masterGain.maxValue}].`;
+                }
+    
+                masterGain.gain.setTargetAtTime(vol, ctx.currentTime, 0.015);
+            }
+
+            return publicApi;
+        }
+
+        if(!freq || !amp) {
+            throw `The volume and frequency are mandatory.`;
+        }
 
         if(type !== 'sine' && type !== 'triangle' && type != 'square' && type != 'sawtooth') {
             throw `The waveform can be of the following type: sine, square, triangle or sawtooth.`;
@@ -55,13 +71,13 @@ define(() => {
             oscillator.stop(0.0015);
         }
 
-        publicApi.setVolume = function setVolume(volume) {   
-            if( volume < gain.minValue || gain.maxValue < volume) {
+        publicApi.setVolume = function setVolume(vol) {   
+            if( vol < gain.minValue || gain.maxValue < vol) {
                 throw `the gain should be in the range [${gain.minValue}, ${gain.maxValue}].`;
             }
     
-            gain.gain.setTargetAtTime(volume, ctx.currentTime, 0.015);
-            volume = volume;
+            gain.gain.setTargetAtTime(vol, ctx.currentTime, 0.015);
+            volume = vol;
         }
 
         publicApi.setFrequency = function setFrequency(frequency) {
